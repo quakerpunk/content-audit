@@ -10,6 +10,7 @@ import xlwt
 import urlparse
 import re
 import time
+import logging
 
 class ContentAuditor:
     """
@@ -51,6 +52,10 @@ class ContentAuditor:
         Along the way, we check for any connectivity or remote server issues
         and handle them appropriately.
         """
+        right_now = str(int(time.time()))
+        errlogname = 'content_audit_log_' + right_now
+        logging.basicConfig(filename=errlogname, level=logging.INFO, format='%(levelname)s: %(message)s')
+        logging.info('Beginning extraction...\n')
         ua_string = 'Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10.6; en-US; rv:1.9.0.9) Gecko/20120716 Firefox/15.0a2'
         for line in self.filehandle:
             if line.startswith("#"):
@@ -62,18 +67,21 @@ class ContentAuditor:
             try:
                 data = urllib2.urlopen(req)
             except urllib2.HTTPError, ex:
-                print "Could not parse %s. The server returned the following:" % line
-                print "Error code: ", ex.code
-                print "Moving on to the next one..."
+                logging.warning("Could not parse %s", line.rstrip())
+                logging.warning("The server returned the following: ")
+                logging.warning("Error code: %s", ex.code)
+                logging.warning("Moving on to the next one...\n")
                 continue
             except urllib2.URLError, urlex:
-                print "Could not parse %s. We did not reach a server." % line
-                print "Reason: ", urlex.reason
-                print "Moving on to the next one..."
+                logging.warning("Could not parse %s", line.rstrip())
+                logging.warning("We did not reach a server.")
+                logging.warning("Reason: %s", urlex.reason)
+                logging.warning("Moving on to the next one...\n")
                 continue
             self.soupy_data = BeautifulSoup(data)
             self.extract_tags()
             time.sleep(random.uniform(1, 3))
+        logging.info("End of extraction")
 
     #Extraction methods
 
