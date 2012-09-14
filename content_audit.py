@@ -2,7 +2,7 @@
 # content_audit.py
 # Python script that grabs data from a given website.
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from optparse import OptionParser
 import urllib2
 import random
@@ -86,7 +86,7 @@ class ContentAuditor:
         """
         page_info = {}
 
-        for tag in self.soupy_data.findAll('meta', attrs={"name": True}):
+        for tag in self.soupy_data.find_all('meta', attrs={"name": True}):
             page_info[tag['name']] = tag['content']
         page_info['title'] = self.soupy_data.head.title.contents[0]
         page_info['filename'] = self.url_parts[2]
@@ -100,7 +100,7 @@ class ContentAuditor:
 
         Extracts text for content grab for writer
         """
-        self.content = "".join(self.soupy_data.p.findAll(text=True))
+        self.content = "".join(self.soupy_data.p.find_all(text=True))
         self.text_file = open('content_output.txt', 'w')
         self.text_file.write(self.content)
         self.text_file.close()
