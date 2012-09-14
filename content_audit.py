@@ -94,17 +94,6 @@ class ContentAuditor:
         self.site_info.append(page_info)
         self.soupy_data = ""
 
-    def extract_text(self):
-        """
-        extract_text
-
-        Extracts text for content grab for writer
-        """
-        self.content = "".join(self.soupy_data.p.find_all(text=True))
-        self.text_file = open('content_output.txt', 'w')
-        self.text_file.write(self.content)
-        self.text_file.close()
-
     #Spreadsheet methods
 
     def write_to_spreadsheet(self):
