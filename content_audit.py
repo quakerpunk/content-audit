@@ -55,7 +55,7 @@ class ContentAuditor:
         for line in self.filehandle:
             if line.startswith("#"):
                 continue
-	        print "Parsing %s" % line
+            print "Parsing %s" % line
             self.url_parts = urlparse.urlparse(line)
             req = urllib2.Request(line)
             req.add_header('User-Agent', ua_string)
