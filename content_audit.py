@@ -144,9 +144,7 @@ class ContentAuditor:
         """
         add_necessary_tags
 
-        The Director of Interactive requires certain tags be present in the spreadsheet.
-        But not every web developer includes a description or a keywords tag in
-        every page. This method insures that missing tags have a null value
+        This method insures that missing tags have a null value
         before they are written to the output spreadhseet.
         """
         for key in needed_tags:
