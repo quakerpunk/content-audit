@@ -56,7 +56,7 @@ class ContentAuditor:
         errlogname = 'content_audit_log_' + right_now
         logging.basicConfig(filename=errlogname, level=logging.INFO, format='%(levelname)s: %(message)s')
         logging.info('Beginning extraction...\n')
-        ua_string = 'Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10.6; en-US; rv:1.9.0.9) Gecko/20120716 Firefox/15.0a2'
+        ua_string = 'Content-Audit/2.0'
         for line in self.filehandle:
             if line.startswith("#"):
                 continue
