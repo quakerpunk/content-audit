@@ -90,6 +90,7 @@ class ContentAuditor:
             page_info[tag['name']] = tag['content']
         page_info['title'] = self.soupy_data.head.title.contents[0]
         page_info['filename'] = self.url_parts[2]
+        page_info['name'] = self.soupy_data.h3.get_text()
         self.add_necessary_tags(page_info, ['keywords', 'description', 'title'])
         self.site_info.append(page_info)
         self.soupy_data = ""
@@ -118,6 +119,7 @@ class ContentAuditor:
         count = 1
 
         for dex in self.site_info:
+            self.current_sheet.write(count, 0, dex['name'])
             self.current_sheet.write(count, 1, dex['filename'])
             self.current_sheet.write(count, 2, dex['title'])
             self.current_sheet.write(count, 3, dex['description'])
