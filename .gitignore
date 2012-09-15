@@ -3,3 +3,4 @@
 /mrvlinks.xls
 *.pyc
 content_audit_log*
+.DS_Store
