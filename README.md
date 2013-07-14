@@ -13,7 +13,7 @@ Requirements
 
 * xlwt
 
-  Content Audit relies on xlwt to write to an Excel spreadsheet without the need for COM Interop. See more [here](https://secure.simplistix.co.uk/svn/xlwt/trunk/README.html). As with BeautifulSoup, you can use easy_install to install the library. Like so:
+  Content Audit relies on xlwt to write to an Excel spreadsheet without the need for COM Interop. See more [here](http://www.python-excel.org/). As with BeautifulSoup, you can use easy_install to install the library. Like so:
 
   `easy_install xlwt`
 
