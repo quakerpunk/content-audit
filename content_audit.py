@@ -60,19 +60,19 @@ class ContentAuditor:
         for line in self.filehandle:
             if line.startswith("#"):
                 continue
-            print "Parsing %s" % line
+            print("Parsing %s" % line)
             self.url_parts = urlparse.urlparse(line)
             req = urllib2.Request(line)
             req.add_header('User-Agent', ua_string)
             try:
                 data = urllib2.urlopen(req)
-            except urllib2.HTTPError, ex:
+            except urllib2.HTTPError as ex:
                 logging.warning("Could not parse %s", line.rstrip())
                 logging.warning("The server returned the following: ")
                 logging.warning("Error code: %s", ex.code)
                 logging.warning("Moving on to the next one...\n")
                 continue
-            except urllib2.URLError, urlex:
+            except urllib2.URLError as urlex:
                 logging.warning("Could not parse %s", line.rstrip())
                 logging.warning("We did not reach a server.")
                 logging.warning("Reason: %s", urlex.reason)
