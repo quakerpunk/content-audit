@@ -46,7 +46,7 @@ class ContentAuditor:
         Method which reads in a given url (to the constructor) and puts data
         into a BeautifulSoup context.
 
-        We begin setting a string for the user-agent. Checking for comment
+        We begin setting the user-agent in a headers dictionary. Checking for comment
         lines in the URL list, we take a web address, one at a time, download
         the HTML, parse it with BeautifulSoup then pass it off to extract tags.
         Along the way, we check for any connectivity or remote server issues
