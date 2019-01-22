@@ -79,7 +79,7 @@ class ContentAuditor:
                 logging.warning("Reason: %s", urlex.reason)
                 logging.warning("Moving on to the next one...\n")
                 continue
-            self.soupy_data = BeautifulSoup(data)
+            self.soupy_data = BeautifulSoup(data, features="html.parser")
             self.extract_tags()
             time.sleep(random.uniform(1, 3))
         logging.info("End of extraction")
