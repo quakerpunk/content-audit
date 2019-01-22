@@ -4,10 +4,10 @@
 
 from bs4 import BeautifulSoup
 from optparse import OptionParser
-import urllib2
+from urllib.parse import urlparse
+import urllib.request
 import random
 import xlwt
-import urlparse
 import re
 import time
 import logging
@@ -56,23 +56,24 @@ class ContentAuditor:
         errlogname = 'content_audit_log_' + right_now
         logging.basicConfig(filename=errlogname, level=logging.INFO, format='%(levelname)s: %(message)s')
         logging.info('Beginning extraction...\n')
-        ua_string = 'Content-Audit/2.0'
+        headers = {
+            'User-Agent': 'Content-Audit/2.0'
+        }
         for line in self.filehandle:
             if line.startswith("#"):
                 continue
             print("Parsing %s" % line)
-            self.url_parts = urlparse.urlparse(line)
-            req = urllib2.Request(line)
-            req.add_header('User-Agent', ua_string)
+            self.url_parts = urlparse(line)
+            req = urllib.request.Request(line, headers=headers)
             try:
-                data = urllib2.urlopen(req)
-            except urllib2.HTTPError as ex:
+                data = urllib.request.urlopen(req).read()
+            except urllib.error.HTTPError as ex:
                 logging.warning("Could not parse %s", line.rstrip())
                 logging.warning("The server returned the following: ")
                 logging.warning("Error code: %s", ex.code)
                 logging.warning("Moving on to the next one...\n")
                 continue
-            except urllib2.URLError as urlex:
+            except urllib.error.URLError as urlex:
                 logging.warning("Could not parse %s", line.rstrip())
                 logging.warning("We did not reach a server.")
                 logging.warning("Reason: %s", urlex.reason)
