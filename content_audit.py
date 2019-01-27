@@ -21,7 +21,7 @@ class ContentAuditor:
     spreadsheet with the data for easy review.
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename, outputfile):
         """
         Initialization method for the ContentAuditor class.
 
@@ -29,7 +29,14 @@ class ContentAuditor:
         BeautifulSoup for HTML parsing
         xlwt for writing to an Excel spreadsheet without use of COM Interop
         """
+        self.run_time = str(int(time.time()))
         self.filehandle = open(filename, 'r')
+        self.outputfile = outputfile
+        self.errlogname = 'content_audit_log_' + self.run_time
+        self.headers = {
+            #TODO: Update version number to 3.0
+            'User-Agent': 'Content-Audit/2.0'
+        }
         self.soupy_data = ""
         self.workbook = ""
         self.current_sheet = ""
@@ -37,6 +44,8 @@ class ContentAuditor:
         self.text_file = ""
         self.site_info = []
         self.url_parts = ""
+
+        # TODO Update this regular expression to account for new TLDs.
         self.reg_expres = re.compile(r"www.(.+?)(.com|.net|.org)")
 
     def read_url(self):
@@ -52,21 +61,22 @@ class ContentAuditor:
         Along the way, we check for any connectivity or remote server issues
         and handle them appropriately.
         """
-        right_now = str(int(time.time()))
-        errlogname = 'content_audit_log_' + right_now
-        logging.basicConfig(filename=errlogname, level=logging.INFO, format='%(levelname)s: %(message)s')
+        logging.basicConfig(
+            filename=self.errlogname,
+            level=logging.INFO,
+            format='%(levelname)s: %(message)s'
+        )
         logging.info('Beginning extraction...\n')
-        headers = {
-            'User-Agent': 'Content-Audit/2.0'
-        }
         for line in self.filehandle:
             if line.startswith("#"):
                 continue
             print("Parsing %s" % line)
             self.url_parts = urlparse(line)
-            req = urllib.request.Request(line, headers=headers)
+            req = urllib.request.Request(line, headers=self.headers)
             try:
-                data = urllib.request.urlopen(req).read()
+                # data = urllib.request.urlopen(req).read()
+                self.soupy_data = BeautifulSoup(urllib.request.urlopen(req).read(), features="html.parser")
+                self.extract_tags()
             except urllib.error.HTTPError as ex:
                 logging.warning("Could not parse %s", line.rstrip())
                 logging.warning("The server returned the following: ")
@@ -79,13 +89,12 @@ class ContentAuditor:
                 logging.warning("Reason: %s", urlex.reason)
                 logging.warning("Moving on to the next one...\n")
                 continue
-            self.soupy_data = BeautifulSoup(data, features="html.parser")
-            self.extract_tags()
             time.sleep(random.uniform(1, 3))
-        logging.info("End of extraction")
+        logging.info("End of extraction\n")
+        logging.info("Creating spreadsheet")
+        self.write_to_spreadsheet()
 
     #Extraction methods
-
     def extract_tags(self):
         """
         extract_tags
@@ -105,7 +114,6 @@ class ContentAuditor:
         self.soupy_data = ""
 
     #Spreadsheet methods
-
     def write_to_spreadsheet(self):
         """
         write_to_spreadsheet
@@ -135,8 +143,7 @@ class ContentAuditor:
             self.current_sheet.write(count, 4, dex['keywords'])
             count += 1
 
-        #self.workbook.save('content_audit.xls')
-        self.workbook.save(options.output)
+        self.workbook.save(self.outputfile)
 
     #Helper methods
 
@@ -164,9 +171,8 @@ if __name__ == "__main__":
     if not options.output:
         parser.error("You did not specify an output file.")
 
-    if options.filename:
-        content_bot = ContentAuditor(options.filename)
-        content_bot.read_url()
-        content_bot.write_to_spreadsheet()
-    else:
+    if not options.filename:
         parser.error("You did not specify an input file (a list of URLs)")
+
+    content_bot = ContentAuditor(options.filename, options.output)
+    content_bot.read_url()
