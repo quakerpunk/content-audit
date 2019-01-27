@@ -12,6 +12,7 @@ import re
 import time
 import logging
 
+
 class ContentAuditor:
     """
     ContentAuditor
@@ -34,7 +35,7 @@ class ContentAuditor:
         self.outputfile = outputfile
         self.errlogname = 'content_audit_log_' + self.run_time
         self.headers = {
-            #TODO: Update version number to 3.0
+            # TODO: Update version number to 3.0
             'User-Agent': 'Content-Audit/2.0'
         }
         self.soupy_data = ""
@@ -75,7 +76,8 @@ class ContentAuditor:
             req = urllib.request.Request(line, headers=self.headers)
             try:
                 # data = urllib.request.urlopen(req).read()
-                self.soupy_data = BeautifulSoup(urllib.request.urlopen(req).read(), features="html.parser")
+                self.soupy_data = BeautifulSoup(
+                    urllib.request.urlopen(req).read(), features="html.parser")
                 self.extract_tags()
             except urllib.error.HTTPError as ex:
                 logging.warning("Could not parse %s", line.rstrip())
@@ -94,7 +96,7 @@ class ContentAuditor:
         logging.info("Creating spreadsheet")
         self.write_to_spreadsheet()
 
-    #Extraction methods
+    # Extraction methods
     def extract_tags(self):
         """
         extract_tags
@@ -109,11 +111,12 @@ class ContentAuditor:
         page_info['title'] = self.soupy_data.head.title.contents[0]
         page_info['filename'] = self.url_parts[2]
         page_info['name'] = self.soupy_data.h3.get_text()
-        self.add_necessary_tags(page_info, ['keywords', 'description', 'title'])
+        self.add_necessary_tags(
+            page_info, ['keywords', 'description', 'title'])
         self.site_info.append(page_info)
         self.soupy_data = ""
 
-    #Spreadsheet methods
+    # Spreadsheet methods
     def write_to_spreadsheet(self):
         """
         write_to_spreadsheet
@@ -145,8 +148,7 @@ class ContentAuditor:
 
         self.workbook.save(self.outputfile)
 
-    #Helper methods
-
+    # Helper methods
     def add_necessary_tags(self, info_dict, needed_tags):
         """
         add_necessary_tags
@@ -158,6 +160,7 @@ class ContentAuditor:
             if key not in info_dict:
                 info_dict[key] = " "
         return info_dict
+
 
 if __name__ == "__main__":
     parser = OptionParser()
