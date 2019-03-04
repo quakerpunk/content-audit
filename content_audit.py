@@ -8,10 +8,8 @@ from urllib.parse import urlparse
 import urllib.request
 import random
 import xlwt
-import re
 import time
 import logging
-
 
 class ContentAuditor:
     """
@@ -45,9 +43,6 @@ class ContentAuditor:
         self.text_file = ""
         self.site_info = []
         self.url_parts = ""
-
-        # TODO Update this regular expression to account for new TLDs.
-        self.reg_expres = re.compile(r"www.(.+?)(.com|.net|.org)")
 
     def read_url(self):
         """
@@ -125,9 +120,7 @@ class ContentAuditor:
         url
         """
         self.workbook = xlwt.Workbook()
-
-        page_name = self.reg_expres.match(self.url_parts[1])
-        self.current_sheet = self.workbook.add_sheet(page_name.group(1))
+        self.current_sheet = self.workbook.add_sheet(self.url_parts.netloc)
 
         self.current_sheet.write(0, 0, "Page Name")
         self.current_sheet.write(0, 1, "File Name")
